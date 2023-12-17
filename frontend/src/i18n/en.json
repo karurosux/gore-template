@@ -1,0 +1,57 @@
+{
+  "appName": "App",
+  "general": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "fullName": "Full Name",
+    "role": "Role",
+    "filter": "Filter",
+    "delete": "Delete",
+    "create": "Create",
+    "description": "Description",
+    "name": "Name",
+    "branch": "Branch",
+    "roleType": "Role Type",
+    "permissions": "Permissions",
+    "category": "Category",
+    "write": "Write",
+    "read": "Read",
+    "reset": "Reset"
+  },
+  "login": {
+    "unauthorized": "Sorry, we couldn't find an account with that email address and password. Please try again.",
+    "emailPlaceholder": "imcool@email.com",
+    "passwordPlaceholder": "****"
+  },
+  "userManagement": {
+    "title": "User Management",
+    "userList": "User List",
+    "createUser": "Create User",
+    "deleteUser": "Delete User",
+    "deleteUserConfirmation": "Are you sure you want to delete this user?",
+    "emailExist": "Email is already in use by another user."
+  },
+  "customerManagement": {
+    "title": "Customer Management"
+  },
+  "roleManagement": {
+    "title": "Role Management",
+    "roleList": "Role List",
+    "createRole": "Create Role",
+    "isSuperAdmin": "Is Super Admin",
+    "deleteRole": "Delete Role",
+    "deleteRoleConfirmation": "Are you sure you want to delete this role?",
+    "roleProfileTitle": "Role Profile ({{name}})",
+    "deletePermissionConfirmTitle": "Delete Permission",
+    "deletePermissionConfirmContent": "Are you sure you want to delete this permission?",
+    "addPermission": "Add Permission",
+    "errorCreatingPermission": "Permission could not be created, this could be due to a duplicate permission."
+  },
+  "branchManagement": {
+    "title": "Branch Management"
+  }
+}
