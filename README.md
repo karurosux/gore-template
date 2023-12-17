@@ -40,7 +40,7 @@ For regenerating these types just move to
 make generate-ts
 ```
 
-## Building Application Production
+## Building Application for Production
 
 Of course this may need more work to be done here, but this template gets a basic approach for this process ready, for generating a prod version just run the next command from the root folder:
 
