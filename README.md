@@ -6,6 +6,8 @@ Base application built with the next stack:
 - Go: Using golang in the backend, echo for the API framework and some other dependecies for the creating utilities.
 - PostgreSql: The DB is created in docker, see the makefile inside the backend folder and docker-compose.yml file in the same folder for more detail.
 
+![](https://github.com/karurosux/gore-template/blob/8dc346ef65d7f9ec8020b3207fad0d52dcbe60cd/app-demo.gif)
+
 ## Prerequesites
 
 1. Unix OS(MacOs, Linux or WSL).
