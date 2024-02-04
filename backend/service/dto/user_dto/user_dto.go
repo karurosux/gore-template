@@ -18,7 +18,7 @@ type UserDTO struct {
 	UpdatedAt time.Time     `json:"updatedAt"`
 }
 
-func ToUserDto(user entities.User) UserDTO {
+func ToUserDTO(user entities.User) UserDTO {
 	return UserDTO{
 		ID:        user.ID,
 		FirstName: user.FirstName,
@@ -32,7 +32,7 @@ func ToUserDto(user entities.User) UserDTO {
 
 func ToUserDTOs(u []entities.User) []UserDTO {
 	userDTOs := lo.Map(u, func(cu entities.User, idx int) UserDTO {
-		return ToUserDto(cu)
+		return ToUserDTO(cu)
 	})
 	return userDTOs
 }

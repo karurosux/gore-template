@@ -26,37 +26,23 @@ func NewPermissionsController(i *do.Injector) (*PermissionsController, error) {
 }
 
 func (pc *PermissionsController) RegisterRoutes(e *echo.Echo) {
-	e.GET(constants.PermissionsEndpoint, middleware.PermissionCheck([]middleware.AllowedPermissions{
+	readPermissions := []middleware.AllowedPermissions{
 		{
 			Cat: entities.RoleManagement,
 			Val: middleware.READ,
 		},
-	}, pc.HandleGetPermissionsByRole)).Name = "getPermissionsByRole"
-	e.GET(constants.PermissionsEndpoint+"/categories", middleware.PermissionCheck([]middleware.AllowedPermissions{
-		{
-			Cat: entities.RoleManagement,
-			Val: middleware.READ,
-		},
-	}, pc.HandleGetPermissionCategories)).Name = "getPermissionsCategories"
-	e.POST(constants.PermissionsEndpoint, middleware.PermissionCheck([]middleware.AllowedPermissions{
+	}
+	writePermissions := []middleware.AllowedPermissions{
 		{
 			Cat: entities.RoleManagement,
 			Val: middleware.WRITE,
 		},
-	}, pc.HandleCreatePermission)).Name = "createPermission"
-
-	e.PATCH(constants.PermissionsEndpoint+"/:id", middleware.PermissionCheck([]middleware.AllowedPermissions{
-		{
-			Cat: entities.RoleManagement,
-			Val: middleware.WRITE,
-		},
-	}, pc.HandlePatchPermission)).Name = "updatePermission"
-	e.DELETE(constants.PermissionsEndpoint+"/:id", middleware.PermissionCheck([]middleware.AllowedPermissions{
-		{
-			Cat: entities.RoleManagement,
-			Val: middleware.WRITE,
-		},
-	}, pc.HandleDeleteById)).Name = "deleteById"
+	}
+	e.GET(constants.PermissionsEndpoint, pc.HandleGetPermissionsByRole, middleware.PermissionCheck(readPermissions)).Name = "getPermissionsByRole"
+	e.GET(constants.PermissionsEndpoint+"/categories", pc.HandleGetPermissionCategories, middleware.PermissionCheck(readPermissions)).Name = "getPermissionsCategories"
+	e.POST(constants.PermissionsEndpoint, pc.HandleCreatePermission, middleware.PermissionCheck(writePermissions)).Name = "createPermission"
+	e.PATCH(constants.PermissionsEndpoint+"/:id", pc.HandlePatchPermission, middleware.PermissionCheck(writePermissions)).Name = "updatePermission"
+	e.DELETE(constants.PermissionsEndpoint+"/:id", pc.HandleDeleteById, middleware.PermissionCheck(writePermissions)).Name = "deleteById"
 }
 
 func (pc *PermissionsController) HandleGetPermissionsByRole(c echo.Context) error {
@@ -74,7 +60,6 @@ func (pc *PermissionsController) HandleGetPermissionsByRole(c echo.Context) erro
 		UUID:  query.RoleId,
 		Valid: true,
 	})
-
 	if err != nil {
 		return pc.errorService.InternalServerError(err)
 	}
@@ -88,6 +73,7 @@ func (pc *PermissionsController) HandleGetPermissionCategories(c echo.Context) e
 		entities.CustomerManagement,
 		entities.RoleManagement,
 		entities.UserManagement,
+		entities.SurveyManagement,
 	})
 }
 
@@ -108,7 +94,6 @@ func (pc *PermissionsController) HandleCreatePermission(c echo.Context) error {
 		Read:     body.Read,
 		RoleId:   body.RoleId,
 	})
-
 	if err != nil {
 		return pc.errorService.InternalServerError(err)
 	}
@@ -146,7 +131,6 @@ func (pc *PermissionsController) HandlePatchPermission(c echo.Context) error {
 	}
 
 	err := pc.permissionsService.PatchById(req.ID, req.Write, req.Read)
-
 	if err != nil {
 		return pc.errorService.InternalServerError(err)
 	}

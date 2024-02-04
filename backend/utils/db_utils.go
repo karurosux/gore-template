@@ -14,7 +14,6 @@ func NewDb() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(DATABASE_URL), &gorm.Config{
 		// Logger: logger.Default.LogMode(logger.Info),
 	})
-
 	if err != nil {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
@@ -28,5 +27,6 @@ func MigrateDb() *gorm.DB {
 	db.AutoMigrate(&entities.Role{})
 	db.AutoMigrate(&entities.Permission{})
 	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Customer{})
 	return db
 }

@@ -2,60 +2,43 @@ package service
 
 import (
 	"app/entities"
-	"app/model"
 	"app/repository"
 	userdto "app/service/dto/user_dto"
 
-	"github.com/google/uuid"
 	"github.com/samber/do"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
-	userRepository *repository.UserRepository
-	roleService    *RoleService
+	BaseService[entities.User, userdto.UserDTO]
+	passwordService *PasswordService
+	roleService     *RoleService
 }
 
 func NewUserService(i *do.Injector) (*UserService, error) {
 	return &UserService{
-		userRepository: do.MustInvoke[*repository.UserRepository](i),
-		roleService:    do.MustInvoke[*RoleService](i),
-	}, nil
-}
-
-func (us *UserService) GetPaginated(user userdto.UserWithRoleAndPermissions, page int, limit int, filter string) (model.Paginated[userdto.UserWithRoleAndPermissions], error) {
-	users, err := us.userRepository.GetPageByUser(user, page, limit, filter)
-	if err != nil {
-		return model.Paginated[userdto.UserWithRoleAndPermissions]{}, err
-	}
-
-	count, err := us.userRepository.GetCountByUser(user, filter)
-	if err != nil {
-		return model.Paginated[userdto.UserWithRoleAndPermissions]{}, err
-	}
-
-	return model.Paginated[userdto.UserWithRoleAndPermissions]{
-		Data: userdto.ToUsersWithRoleAndPermissions(users),
-		Meta: model.PaginatedMeta{
-			Total:       count,
-			PerPage:     int32(limit),
-			CurrentPage: int32(page),
+		BaseService: BaseService[entities.User, userdto.UserDTO]{
+			repository: do.MustInvoke[repository.UserRepository](i),
+			toDTOFunc:  userdto.ToUserDTO,
+			toDTOsFunc: userdto.ToUserDTOs,
 		},
+		passwordService: do.MustInvoke[*PasswordService](i),
+		roleService:     do.MustInvoke[*RoleService](i),
 	}, nil
 }
 
-func (us *UserService) GetById(user userdto.UserWithRoleAndPermissions, id uuid.UUID) (userdto.UserDTO, error) {
-	foundUser, err := us.userRepository.GetById(user, id)
-
+func (us *UserService) Create(u entities.User) (userdto.UserDTO, error) {
+	pass, err := us.passwordService.HashPassword(u.Password)
 	if err != nil {
 		return userdto.UserDTO{}, err
 	}
-
-	return userdto.ToUserDto(foundUser), nil
+	u.Password = pass
+	return us.BaseService.Create(u)
 }
 
-func (us *UserService) GetByEmailWithPassword(email string) (userdto.UserWithPasswordDTO, error) {
-	user, err := us.userRepository.GetByEmail(email)
-
+func (us *UserService) FindByEmailWithPassword(email string) (userdto.UserWithPasswordDTO, error) {
+	repo := us.repository.(repository.UserRepository)
+	user, err := repo.FindByEmail(email)
 	if err != nil {
 		return userdto.UserWithPasswordDTO{}, err
 	}
@@ -63,8 +46,9 @@ func (us *UserService) GetByEmailWithPassword(email string) (userdto.UserWithPas
 	return userdto.ToUserWithPassword(user), nil
 }
 
-func (us *UserService) GetByEmailWithRoleAndPermissions(email string) (userdto.UserWithRoleAndPermissions, error) {
-	u, err := us.userRepository.GetByEmail(email)
+func (us *UserService) FindByEmailWithRoleAndPermissions(email string) (userdto.UserWithRoleAndPermissions, error) {
+	repo := us.repository.(repository.UserRepository)
+	u, err := repo.FindByEmail(email)
 	if err != nil {
 		return userdto.UserWithRoleAndPermissions{}, err
 	}
@@ -77,17 +61,12 @@ func (us *UserService) GetByEmailWithRoleAndPermissions(email string) (userdto.U
 	return userdto.ToUserWithRoleAndPermissions(u, r), nil
 }
 
-func (us *UserService) DeleteById(user userdto.UserWithRoleAndPermissions, id uuid.UUID) error {
-	return us.userRepository.DeleteById(user, id)
-}
-
-func (us *UserService) Create(user userdto.UserWithRoleAndPermissions, newUser userdto.CreateUserDTO) (userdto.UserDTO, error) {
-	created, err := us.userRepository.CreateUser(entities.User{
-		FirstName: newUser.FirstName,
-		LastName:  newUser.LastName,
-		Email:     newUser.Email,
-		RoleId:    uuid.NullUUID{UUID: newUser.RoleId, Valid: true},
-		BranchId:  user.BranchId,
+func (us *UserService) FindPagedWithRoleAndPermissions(user userdto.UserWithRoleAndPermissions, page int, limit int, filter string) ([]userdto.UserWithRoleAndPermissions, error) {
+	res, err := us.FindPagedByUserBranchWithFilterRaw(user, page, limit, filter, func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Role")
 	})
-	return userdto.ToUserDto(created), err
+	if err != nil {
+		return []userdto.UserWithRoleAndPermissions{}, err
+	}
+	return userdto.ToUsersWithRoleAndPermissions(res), nil
 }

@@ -10,21 +10,19 @@ import (
 	"github.com/samber/lo"
 )
 
-var (
-	PUBLIC_ROUTES []string = []string{
-		"/api/v1/auth/login",
-	}
-)
+var PUBLIC_ROUTES []string = []string{
+	"/api/v1/auth/login",
+}
 
 type SessionCheck struct {
-	userService  *service.UserService
+	userServ     *service.UserService
 	errorService *service.ErrorService
 	jwtService   *service.JwtService
 }
 
 func NewSessionCheck(i *do.Injector) (*SessionCheck, error) {
 	return &SessionCheck{
-		userService:  do.MustInvoke[*service.UserService](i),
+		userServ:     do.MustInvoke[*service.UserService](i),
 		errorService: do.MustInvoke[*service.ErrorService](i),
 		jwtService:   do.MustInvoke[*service.JwtService](i),
 	}, nil
@@ -51,7 +49,7 @@ func (sc *SessionCheck) SessionCheckMiddleware(next echo.HandlerFunc) echo.Handl
 			return nil
 		}
 
-		foundUser, err := sc.userService.GetByEmailWithRoleAndPermissions(claims.Email)
+		foundUser, err := sc.userServ.FindByEmailWithRoleAndPermissions(claims.Email)
 		if err != nil {
 			c.Error(sc.errorService.UnauthorizedError(err))
 			return nil

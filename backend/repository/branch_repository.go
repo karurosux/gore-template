@@ -3,29 +3,34 @@ package repository
 import (
 	"app/entities"
 
-	"github.com/google/uuid"
 	"github.com/samber/do"
 	"gorm.io/gorm"
 )
 
 type BranchRepository struct {
-	db *gorm.DB
+	BaseRepository[entities.Branch]
 }
 
-func NewBranchRepository(i *do.Injector) (*BranchRepository, error) {
-	return &BranchRepository{
-		db: do.MustInvoke[*gorm.DB](i),
+func NewBranchRepository(i *do.Injector) (BranchRepository, error) {
+	return BranchRepository{
+		BaseRepository: BaseRepository[entities.Branch]{
+			db: do.MustInvoke[*gorm.DB](i),
+			filterFunc: func(filter string) func(*gorm.DB) *gorm.DB {
+				return func(d *gorm.DB) *gorm.DB {
+					if filter != "" {
+						return d.Where("name like ?", "%"+filter+"%").Or("city like ?", "%"+filter+"%").Or("state like ?", "%"+filter+"%")
+					}
+
+					return d
+				}
+			},
+			patchFunc: func(body entities.Branch) ([]string, entities.Branch) {
+				return []string{
+						"name",
+					}, entities.Branch{
+						Name: body.Name,
+					}
+			},
+		},
 	}, nil
-}
-
-func (br *BranchRepository) GetAllBranches() []entities.Branch {
-	var branches []entities.Branch
-	br.db.Find(&branches)
-	return branches
-}
-
-func (br *BranchRepository) GetBranchById(id uuid.UUID) (entities.Branch, error) {
-	var branch entities.Branch
-	err := br.db.First(&branch, id).Error
-	return branch, err
 }

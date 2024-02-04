@@ -11,12 +11,25 @@ import (
 )
 
 type RoleRepository struct {
-	db *gorm.DB
+	BaseRepository[entities.Role]
 }
 
 func NewRoleRepository(i *do.Injector) (*RoleRepository, error) {
 	return &RoleRepository{
-		db: do.MustInvoke[*gorm.DB](i),
+		BaseRepository: BaseRepository[entities.Role]{
+			db: do.MustInvoke[*gorm.DB](i),
+			filterFunc: func(filter string) func(*gorm.DB) *gorm.DB {
+				return func(db *gorm.DB) *gorm.DB {
+					if filter != "" {
+						return db.Where("name like ?", "%"+filter+"%")
+					}
+					return db
+				}
+			},
+			patchFunc: func(body entities.Role) ([]string, entities.Role) {
+				return []string{}, entities.Role{}
+			},
+		},
 	}, nil
 }
 

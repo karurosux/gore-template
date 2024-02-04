@@ -5,7 +5,6 @@ import (
 	roledto "app/api/dto/role_dto"
 	constants "app/contants"
 	"app/entities"
-	"app/middleware"
 	mmidleware "app/middleware"
 	"app/service"
 	sroledto "app/service/dto/role_dto"
@@ -28,30 +27,22 @@ func NewRoleController(i *do.Injector) (*RoleController, error) {
 }
 
 func (rc *RoleController) RegisterRoutes(e *echo.Echo) {
-	e.GET(constants.RoleEndpoint, mmidleware.PermissionCheck([]mmidleware.AllowedPermissions{
+	readPermissions := []mmidleware.AllowedPermissions{
 		{
 			Cat: entities.RoleManagement,
 			Val: mmidleware.READ,
 		},
-	}, rc.HandleGetAllRoles)).Name = "getAllRoles"
-	e.GET(constants.RoleEndpoint+"/:id", mmidleware.PermissionCheck([]mmidleware.AllowedPermissions{
-		{
-			Cat: entities.RoleManagement,
-			Val: mmidleware.READ,
-		},
-	}, rc.HandleGetRoleById)).Name = "getRoleById"
-	e.POST(constants.RoleEndpoint, mmidleware.PermissionCheck([]mmidleware.AllowedPermissions{
+	}
+	writePermissions := []mmidleware.AllowedPermissions{
 		{
 			Cat: entities.RoleManagement,
 			Val: mmidleware.WRITE,
 		},
-	}, rc.HandleCreateRole)).Name = "createRole"
-	e.DELETE(constants.RoleEndpoint+"/:id", mmidleware.PermissionCheck([]mmidleware.AllowedPermissions{
-		{
-			Cat: entities.RoleManagement,
-			Val: mmidleware.WRITE,
-		},
-	}, rc.HandleDeleteRole)).Name = "deleteRole"
+	}
+	e.GET(constants.RoleEndpoint, rc.HandleGetAllRoles, mmidleware.PermissionCheck(readPermissions)).Name = "getAllRoles"
+	e.GET(constants.RoleEndpoint+"/:id", rc.HandleGetRoleById, mmidleware.PermissionCheck(readPermissions)).Name = "getRoleById"
+	e.POST(constants.RoleEndpoint, rc.HandleCreateRole, mmidleware.PermissionCheck(writePermissions)).Name = "createRole"
+	e.DELETE(constants.RoleEndpoint+"/:id", rc.HandleDeleteRole, mmidleware.PermissionCheck(writePermissions)).Name = "deleteRole"
 }
 
 func (rc *RoleController) HandleGetAllRoles(c echo.Context) error {
@@ -61,9 +52,8 @@ func (rc *RoleController) HandleGetAllRoles(c echo.Context) error {
 		return rc.errorService.BadRequestError(err)
 	}
 
-	user := middleware.GetUserFromContext(c)
+	user := mmidleware.GetUserFromContext(c)
 	res, err := rc.roleService.GetAllRoles(user, query.Filter)
-
 	if err != nil {
 		return rc.errorService.InternalServerError(err)
 	}
@@ -79,7 +69,6 @@ func (rc *RoleController) HandleGetRoleById(c echo.Context) error {
 	}
 
 	result, err := rc.roleService.GetRoleById(id)
-
 	if err != nil {
 		return echo.NewHTTPError(echo.ErrBadRequest.Code, err.Error())
 	}
@@ -98,13 +87,12 @@ func (rc *RoleController) HandleCreateRole(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrBadRequest.Code, err.Error())
 	}
 
-	user := middleware.GetUserFromContext(c)
+	user := mmidleware.GetUserFromContext(c)
 
 	newRole, err := rc.roleService.CreateRole(sroledto.CreateRoleDTO{
 		Name:     role.Name,
 		BranchId: user.BranchId.UUID,
 	})
-
 	if err != nil {
 		return rc.errorService.InternalServerError(err)
 	}
@@ -120,10 +108,9 @@ func (rc *RoleController) HandleDeleteRole(c echo.Context) error {
 	}
 
 	uid := uuid.MustParse(id)
-	user := middleware.GetUserFromContext(c)
+	user := mmidleware.GetUserFromContext(c)
 
 	err := rc.roleService.DeleteById(user, uid)
-
 	if err != nil {
 		return rc.errorService.InternalServerError(err)
 	}

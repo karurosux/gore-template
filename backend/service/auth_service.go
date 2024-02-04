@@ -7,22 +7,21 @@ import (
 )
 
 type AuthService struct {
-	userService     *UserService
+	userServ        *UserService
 	jwtService      *JwtService
 	passwordService *PasswordService
 }
 
 func NewAuthService(i *do.Injector) (*AuthService, error) {
 	return &AuthService{
-		userService:     do.MustInvoke[*UserService](i),
+		userServ:        do.MustInvoke[*UserService](i),
 		jwtService:      do.MustInvoke[*JwtService](i),
 		passwordService: do.MustInvoke[*PasswordService](i),
 	}, nil
 }
 
 func (as *AuthService) Login(email string, password string) (string, error) {
-	foundUser, err := as.userService.GetByEmailWithPassword(email)
-
+	foundUser, err := as.userServ.FindByEmailWithPassword(email)
 	if err != nil {
 		return "", err
 	}
@@ -32,7 +31,6 @@ func (as *AuthService) Login(email string, password string) (string, error) {
 	}
 
 	token, err := as.jwtService.GenerateToken(email)
-
 	if err != nil {
 		return "", err
 	}

@@ -1,11 +1,11 @@
 package api
 
 import (
+	"log"
 	authdto "app/api/dto/auth_dto"
 	constants "app/contants"
 	"app/service"
 	"app/utils"
-	"log"
 
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"

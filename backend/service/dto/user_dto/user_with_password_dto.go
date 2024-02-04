@@ -8,7 +8,7 @@ type UserWithPasswordDTO struct {
 }
 
 func ToUserWithPassword(u entities.User) UserWithPasswordDTO {
-	ud := ToUserDto(u)
+	ud := ToUserDTO(u)
 	return UserWithPasswordDTO{
 		UserDTO:  ud,
 		Password: u.Password,

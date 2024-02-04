@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/dariubs/gorm-jsonb v0.1.5 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

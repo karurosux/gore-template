@@ -14,7 +14,7 @@ type UserWithRoleAndPermissions struct {
 
 func ToUserWithRoleAndPermissions(u entities.User, r roledto.RoleWithPermissionsDTO) UserWithRoleAndPermissions {
 	return UserWithRoleAndPermissions{
-		UserDTO: ToUserDto(u),
+		UserDTO: ToUserDTO(u),
 		Role:    r,
 	}
 }
@@ -22,7 +22,7 @@ func ToUserWithRoleAndPermissions(u entities.User, r roledto.RoleWithPermissions
 func ToUsersWithRoleAndPermissions(u []entities.User) []UserWithRoleAndPermissions {
 	return lo.Map(u, func(u entities.User, idx int) UserWithRoleAndPermissions {
 		return UserWithRoleAndPermissions{
-			UserDTO: ToUserDto(u),
+			UserDTO: ToUserDTO(u),
 			Role:    roledto.ToRoleWithPermissionsDTO(u.Role),
 		}
 	})

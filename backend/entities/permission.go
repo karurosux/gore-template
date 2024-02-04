@@ -23,6 +23,7 @@ const (
 	RoleManagement     PermissionCategoryVal = "ROLE_MANAGEMENT"
 	CustomerManagement PermissionCategoryVal = "CUSTOMER_MANAGEMENT"
 	BranchManagement   PermissionCategoryVal = "BRANCH_MANAGEMENT"
+	SurveyManagement   PermissionCategoryVal = "SURVEY_MANAGEMENT"
 )
 
 type Permission struct {
