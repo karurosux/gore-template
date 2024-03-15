@@ -1,9 +1,11 @@
 package main
 
 import (
-	"app/entities"
-	"app/service"
-	"app/utils"
+	"backend/base"
+	branchentity "backend/branch/entity"
+	permissionentity "backend/permission/entity"
+	roleentity "backend/role/entity"
+	userentity "backend/user/entity"
 	"log"
 
 	"github.com/google/uuid"
@@ -13,11 +15,11 @@ func Seed() {
 	log.Println("Loading environment variables...")
 
 	log.Println("Seeding database...")
-	db := utils.MigrateDb()
+	db := MigrateDb()
 
 	branchId := uuid.New()
 
-	db.Create(&entities.Branch{
+	db.Create(&branchentity.Branch{
 		ID:      uuid.NullUUID{UUID: branchId, Valid: true},
 		Name:    "HQ",
 		City:    "San Diego",
@@ -28,50 +30,49 @@ func Seed() {
 	log.Printf("Branch %s seeded successfully.", branchId.String())
 
 	roleId := uuid.New()
-	db.Create(&entities.Role{
+	db.Create(&roleentity.Role{
 		ID:       uuid.NullUUID{UUID: roleId, Valid: true},
 		Name:     "Super Admin",
-		RoleType: entities.SuperAdmin,
+		RoleType: roleentity.SuperAdmin,
 		BranchId: uuid.NullUUID{UUID: branchId, Valid: true},
 	})
 	log.Printf("Role %s seeded successfully.", roleId.String())
 
 	// Seed permissions
-	db.Create(&entities.Permission{
+	db.Create(&permissionentity.Permission{
 		RoleId:   roleId,
-		Category: entities.UserManagement,
+		Category: permissionentity.UserManagement,
 		Write:    true,
 		Read:     true,
 	})
-	db.Create(&entities.Permission{
+	db.Create(&permissionentity.Permission{
 		RoleId:   roleId,
-		Category: entities.RoleManagement,
+		Category: permissionentity.RoleManagement,
 		Write:    true,
 		Read:     true,
 	})
-	db.Create(&entities.Permission{
+	db.Create(&permissionentity.Permission{
 		RoleId:   roleId,
-		Category: entities.CustomerManagement,
+		Category: permissionentity.CustomerManagement,
 		Write:    true,
 		Read:     true,
 	})
-	db.Create(&entities.Permission{
+	db.Create(&permissionentity.Permission{
 		RoleId:   roleId,
-		Category: entities.BranchManagement,
+		Category: permissionentity.BranchManagement,
 		Write:    true,
 		Read:     true,
 	})
 	log.Printf("Permissions seeded successfully.")
 
-	hashedPassword, err := service.HashPassword("Pass123!")
-
+	hashedPassword, err := base.HashPassword("Pass123!")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("Creating user with role id %s \n", roleId)
 
-	db.Create(&entities.User{
+	db.Create(&userentity.User{
 		FirstName: "Super",
 		LastName:  "Admin",
 		Email:     "admin@admin.com",

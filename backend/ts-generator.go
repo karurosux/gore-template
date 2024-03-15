@@ -12,104 +12,87 @@ func getOutputBase(fileName string) string {
 
 func GenerateTsTypes() {
 	typeMappings := map[string]string{
-		"time.Time":     "string /* RFC3339 */",
-		"null.String":   "null | string",
-		"null.Bool":     "null | boolean",
-		"uuid.UUID":     "string /* uuid */",
-		"uuid.NullUUID": "string /* uuid */",
+		"time.Time":                   "string /* RFC3339 */",
+		"null.String":                 "null | string",
+		"null.Bool":                   "null | boolean",
+		"uuid.UUID":                   "string /* uuid */",
+		"uuid.NullUUID":               "string /* uuid */",
+		"permissionEntity.Permission": "Permission",
+		"branchEntity.Branch":         "Branch",
+		"branchentity.Branch":         "Branch",
+		"userentity.User":             "User",
+		"roleEntity.Role":             "Role",
+		"gorm.DeletedAt":              "Date",
 	}
 	fallbackType := "any"
 	config := &tygo.Config{
 		Packages: []*tygo.PackageConfig{
 			// Api DTOs
 			{
-				Path:         "app/api/dto",
-				OutputPath:   getOutputBase("api-dto.ts"),
+				Path:         "backend/auth/dto",
+				OutputPath:   getOutputBase("auth.dto.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
 			},
 			{
-				Path:         "app/api/dto/user_dto",
-				OutputPath:   getOutputBase("api-user-dto.ts"),
+				Path:         "backend/branch/dto",
+				OutputPath:   getOutputBase("branch.dto.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
 			},
 			{
-				Path:         "app/api/dto/role_dto",
-				OutputPath:   getOutputBase("api-role-dto.ts"),
+				Path:         "backend/branch/entity",
+				OutputPath:   getOutputBase("branch.entity.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
 			},
 			{
-				Path:         "app/api/dto/permissions_dto",
-				OutputPath:   getOutputBase("api-permissions-dto.ts"),
+				Path:         "backend/permission/dto",
+				OutputPath:   getOutputBase("permission.dto.ts"),
+				FallbackType: fallbackType,
+				TypeMappings: typeMappings,
+				Frontmatter:  "import {PermissionCategoryVal} from \"./permission.entity\"",
+			},
+			{
+				Path:         "backend/permission/entity",
+				OutputPath:   getOutputBase("permission.entity.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
 			},
 			{
-				Path:         "app/api/dto/auth_dto",
-				OutputPath:   getOutputBase("api-auth-dto.ts"),
+				Path:         "backend/role/dto",
+				OutputPath:   getOutputBase("role.dto.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
+				Frontmatter: `import {RoleTypeVal} from "./role.entity"
+import {BranchDTO} from "./branch.dto"
+import {PermissionsDTO} from "./permission.dto"`,
 			},
-			// Service DTOs
 			{
-				Path:         "app/service/dto/user_dto",
-				OutputPath:   getOutputBase("service-user-dto.ts"),
+				Path:         "backend/role/entity",
+				OutputPath:   getOutputBase("role.entity.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
-				ExcludeFiles: []string{
-					"create_user_dto.go",
-				},
-				Frontmatter: `
-import {RoleWithPermissionsDTO} from "./service-role-dto.ts";
-				`,
+				Frontmatter: `import {Permission} from "./permission.entity"
+import {Branch} from "./branch.entity"`,
 			},
 			{
-				Path:         "app/service/dto/role_dto",
-				OutputPath:   getOutputBase("service-role-dto.ts"),
+				Path:         "backend/user/dto",
+				OutputPath:   getOutputBase("user.dto.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
-				ExcludeFiles: []string{
-					"create_role_dto.go",
-				},
-				Frontmatter: `
-import {PermissionsDTO} from "./service-permissions-dto.ts";
-import {BranchDTO} from "./service-branch-dto.ts";
-import {RoleTypeVal} from "./entities.ts";
-				`,
+				Frontmatter:  "import {RoleWithPermissionsDTO} from \"./role.dto\"",
 			},
 			{
-				Path:         "app/service/dto/permissions_dto",
-				OutputPath:   getOutputBase("service-permissions-dto.ts"),
+				Path:         "backend/user/entity",
+				OutputPath:   getOutputBase("user.entity.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
-				ExcludeFiles: []string{
-					"create_permission_dto.go",
-				},
-				Frontmatter: `
-import {PermissionCategoryVal} from "./entities.ts";
-				`,
+				Frontmatter:  "import {Branch} from \"./branch.entity\"\nimport {Role} from \"./role.entity\"",
 			},
 			{
-				Path:         "app/service/dto/branch_dto",
-				OutputPath:   getOutputBase("service-branch-dto.ts"),
-				FallbackType: fallbackType,
-				TypeMappings: typeMappings,
-			},
-			{
-				Path:         "app/model",
-				OutputPath:   getOutputBase("model.ts"),
-				FallbackType: fallbackType,
-				TypeMappings: typeMappings,
-				ExcludeFiles: []string{
-					"controller.go",
-				},
-			},
-			// Entities
-			{
-				Path:         "app/entities",
-				OutputPath:   getOutputBase("entities.ts"),
+				Path:         "backend/base/dto",
+				OutputPath:   getOutputBase("base.dto.ts"),
 				FallbackType: fallbackType,
 				TypeMappings: typeMappings,
 			},
@@ -120,7 +103,6 @@ import {PermissionCategoryVal} from "./entities.ts";
 	fmt.Println("Generating TypeScript definitions.")
 
 	err := gen.Generate()
-
 	if err != nil {
 		fmt.Println("Error generating TypeScript definitions")
 		fmt.Println(err)

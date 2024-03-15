@@ -3,9 +3,9 @@ import {Endpoints} from "@src/constants/endpoints"
 import {
   CreatePermissionDTO,
   GetByRoleIdDTO,
-} from "@src/model/generated/api-permissions-dto"
-import {PermissionCategoryVal} from "@src/model/generated/entities"
-import {PermissionsDTO} from "@src/model/generated/service-permissions-dto"
+  PermissionsDTO,
+} from "@src/model/generated/permission.dto"
+import {PermissionCategoryVal} from "@src/model/generated/permission.entity"
 
 export const permissionsApi = createApi({
   reducerPath: "permissions",

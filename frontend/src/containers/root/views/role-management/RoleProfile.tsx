@@ -10,7 +10,7 @@ import {
 import {useFetchRoleQuery} from "@src/api/roles.api"
 import {useBreadcrumbs} from "@src/hooks/use-breadcrumbs"
 import {useTitle} from "@src/hooks/use-title"
-import {CreatePermissionDTO} from "@src/model/generated/api-permissions-dto"
+import {CreatePermissionDTO} from "@src/model/generated/permission.dto"
 import {
   Alert,
   Button,

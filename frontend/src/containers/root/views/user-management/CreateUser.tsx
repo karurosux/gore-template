@@ -3,7 +3,7 @@ import {
   useCreateUserMutation,
   useExistByEmailMutation,
 } from "@src/api/users.api"
-import {CreateUserDTO} from "@src/model/generated/api-user-dto"
+import {CreateUserDTO} from "@src/model/generated/user.dto"
 import {Form, Input, Modal, Select} from "antd"
 import {debounce} from "lodash"
 import React, {useCallback, useImperativeHandle, useState} from "react"

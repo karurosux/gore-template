@@ -1,8 +1,9 @@
-version: "3.1"
+version: '3.1'
 
 services:
-  app:
-    container_name: app-db
+
+  backend:
+    container_name: backend-db
     image: postgres
     restart: always
     ports:
@@ -10,4 +11,4 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: Pass123!
-      POSTGRES_DB: app
+      POSTGRES_DB: backend

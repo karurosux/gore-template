@@ -9,7 +9,6 @@ import {
 import {useDeleteByIdMutation, useFetchUsersQuery} from "@api/users.api"
 import {useTitle} from "@hooks/use-title"
 import {useBreadcrumbs} from "@src/hooks/use-breadcrumbs"
-import {UserWithRoleAndPermissions} from "@src/model/generated/service-user-dto"
 import {Button, Card, Dropdown, Input, Modal, Space, Table, Tag} from "antd"
 import {ColumnsType} from "antd/es/table"
 import {debounce} from "lodash"
@@ -17,6 +16,7 @@ import {ChangeEvent, useCallback, useRef, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Link} from "react-router-dom"
 import {CreateUser, CreateUserRef} from "./CreateUser"
+import {UserWithRoleAndPermissions} from "@src/model/generated/user.dto"
 
 const {confirm} = Modal
 const DEFAULT_PAGE_SIZE = 5

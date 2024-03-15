@@ -1,7 +1,7 @@
 import {Endpoints} from "@constants/endpoints"
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
-import {LoginBodyDTO} from "@src/model/generated/api-auth-dto"
-import {UserWithRoleAndPermissions} from "@src/model/generated/service-user-dto"
+import {LoginBodyDTO} from "@src/model/generated/auth.dto"
+import {UserWithRoleAndPermissions} from "@src/model/generated/user.dto"
 
 export const authenticatedUserApi = createApi({
   reducerPath: "authenticatedUser",

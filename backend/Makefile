@@ -2,29 +2,29 @@ build:
 	go build .
 
 run:
-	go build -o ./dist/app && ./dist/app
+	go build -o ./dist/backend && ./dist/backend
 
 seed:
-	go build -o ./dist/app && ./dist/app --seed-db
+	go build -o ./dist/backend && ./dist/backend --seed-db
 
 generate-ts:
-	go build -o ./dist/app && ./dist/app --generate-ts
+	go build -o ./dist/backend && ./dist/backend --generate-ts
 
 create-db:
 	docker compose up -d
 
 remove-db:
-	docker rm -f app-db
+	docker rm -f backend-db
 
 stop-db:
-	docker stop app-db
+	docker stop backend-db
 
 reset-db:
-	docker rm -f app-db; \
+	docker rm -f backend-db; \
 	docker compose up -d; \
 
 reseed:
-	docker rm -f app-db; \
+	docker rm -f backend-db; \
 	docker compose up -d; \
 	sleep 3; \
-	go build -o ./dist/app && ./dist/app --seed-db; \
+	go build -o ./dist/backend && ./dist/backend --seed-db; \

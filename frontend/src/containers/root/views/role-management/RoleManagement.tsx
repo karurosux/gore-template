@@ -8,7 +8,6 @@ import {
 import {useDeleteByIdMutation, useFetchRolesQuery} from "@src/api/roles.api"
 import {useBreadcrumbs} from "@src/hooks/use-breadcrumbs"
 import {useTitle} from "@src/hooks/use-title"
-import {RoleWithBranchDTO} from "@src/model/generated/service-role-dto"
 import {Button, Card, Dropdown, Input, Modal, Space, Table} from "antd"
 import {ColumnsType} from "antd/es/table"
 import {debounce} from "lodash"
@@ -16,6 +15,7 @@ import {useCallback, useRef, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Link} from "react-router-dom"
 import {CreateRole, CreateRoleRef} from "./CreateRole"
+import {RoleWithBranchDTO} from "@src/model/generated/role.dto"
 
 export default function RoleManagement() {
   const {t} = useTranslation()

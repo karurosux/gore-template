@@ -1,14 +1,11 @@
 package main
 
 import (
-	"app/api"
-	constants "app/contants"
-	mmidleware "app/middleware"
-	"app/model"
-	"app/repository"
-	"app/service"
-	"app/utils"
 	"fmt"
+	"backend/base"
+	constants "backend/base/contants"
+	mmidleware "backend/base/middleware"
+	utils "backend/base/utils"
 	"net/http"
 	"os"
 	"strconv"
@@ -43,58 +40,18 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 
 func (s *Server) Start() {
 	s.configureORM()
-	s.provideRepositories()
-	s.provideServices()
-	s.provideControllers()
+	RegisterRepositories(s.container)
+	do.Provide(s.container, mmidleware.NewSessionCheck)
+	RegisterServices(s.container)
+	RegisterControllers(s.container)
 	s.configMiddleware()
-	s.registerControllers()
+	RegisterRoutes(s.app, s.container)
 	s.setStaticRoutes()
 	utils.Logger.LogInfo().Msg(s.app.Start(fmt.Sprintf(":%d", getPort())).Error())
 }
 
-func (s *Server) provideRepositories() {
-	do.Provide(s.container, repository.NewPermissionsRepository)
-	do.Provide(s.container, repository.NewUserRepository)
-	do.Provide(s.container, repository.NewBranchRepository)
-	do.Provide(s.container, repository.NewRoleRepository)
-}
-
-func (s *Server) provideServices() {
-	do.Provide(s.container, mmidleware.NewSessionCheck)
-	do.Provide(s.container, service.NewPermissionsService)
-	do.Provide(s.container, service.NewUserService)
-	do.Provide(s.container, service.NewRoleService)
-	do.Provide(s.container, service.NewErrorService)
-	do.Provide(s.container, service.NewPasswordService)
-	do.Provide(s.container, service.NewAuthService)
-	do.Provide(s.container, service.NewJwtService)
-	do.Provide(s.container, service.NewBranchService)
-}
-
-func (s *Server) provideControllers() {
-	do.Provide(s.container, api.NewUserController)
-	do.Provide(s.container, api.NewBranchController)
-	do.Provide(s.container, api.NewRoleController)
-	do.Provide(s.container, api.NewAuthController)
-	do.Provide(s.container, api.NewPermissionsController)
-}
-
-func (s *Server) registerControllers() {
-	var controllers *[]model.Controller = &[]model.Controller{
-		do.MustInvoke[*api.UserController](s.container),
-		do.MustInvoke[*api.BranchController](s.container),
-		do.MustInvoke[*api.RoleController](s.container),
-		do.MustInvoke[*api.AuthController](s.container),
-		do.MustInvoke[*api.PermissionsController](s.container),
-	}
-
-	for i := 0; i < len(*controllers); i++ {
-		(*controllers)[i].RegisterRoutes(s.app)
-	}
-}
-
 func (s *Server) configureORM() {
-	db := utils.MigrateDb()
+	db := MigrateDb()
 
 	do.Provide(s.container, func(i *do.Injector) (*gorm.DB, error) {
 		return db, nil
@@ -106,7 +63,7 @@ func (s *Server) configMiddleware() {
 	s.app.Validator = &CustomValidator{validator: validator.New()}
 	utils.NewLogger()
 	s.app.Use(mmidleware.LoggingMiddleware)
-	s.app.Use(mmidleware.AppendAppContextMiddleware)
+	s.app.Use(base.AppendBackendContextMiddleware)
 	s.app.Use(middleware.Recover())
 	s.app.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("JWT_SECRET")))))
 	s.app.Use(sessionCheck.SessionCheckMiddleware)

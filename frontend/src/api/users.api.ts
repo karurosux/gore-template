@@ -1,12 +1,11 @@
 import {Endpoints} from "@constants/endpoints"
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
-import {PaginatedRequest} from "@src/model/generated/api-dto"
-import {CreateUserDTO} from "@src/model/generated/api-user-dto"
-import {Paginated} from "@src/model/generated/model"
+import {Paginated, PaginatedRequest} from "@src/model/generated/base.dto"
 import {
+  CreateUserDTO,
   UserDTO,
   UserWithRoleAndPermissions,
-} from "@src/model/generated/service-user-dto"
+} from "@src/model/generated/user.dto"
 
 export const usersApi = createApi({
   reducerPath: "users",

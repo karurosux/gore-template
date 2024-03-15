@@ -1,8 +1,11 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 import {Endpoints} from "@src/constants/endpoints"
-import {WithFilterRequestDTO} from "@src/model/generated/api-dto"
-import {CreateRoleDTO} from "@src/model/generated/api-role-dto"
-import {RoleDTO, RoleWithBranchDTO} from "@src/model/generated/service-role-dto"
+import {WithFilterRequestDTO} from "@src/model/generated/base.dto"
+import {
+  CreateRoleDTO,
+  RoleDTO,
+  RoleWithBranchDTO,
+} from "@src/model/generated/role.dto"
 
 export const rolesApi = createApi({
   reducerPath: "roles",
