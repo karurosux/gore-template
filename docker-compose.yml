@@ -1,0 +1,35 @@
+version: "3.1"
+
+networks:
+  default:
+    name: database
+    attachable: true
+
+services:
+  gore-db:
+    container_name: gore-db
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Pass123!
+      POSTGRES_DB: gore
+    networks:
+      default: {}
+
+  gore:
+    container_name: gore
+    image: gore-template
+    restart: always
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    environment:
+      MODE: production
+      DATABASE_URL: postgresql://root:Pass123!@host.docker.internal:5432/gore
+      JWT_SECRET: dummysecret
+      PASSWORD_SECRET_ROUND: 8
+    ports:
+      - 80:8081
+    networks:
+      default: {}

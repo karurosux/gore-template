@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -14,11 +13,7 @@ func main() {
 	var requestedSeeding bool = lo.Some[string](os.Args, []string{"--seed-db"})
 	var generateTsTypes bool = lo.Some[string](os.Args, []string{"--generate-ts"})
 
-	dotEnvErr := godotenv.Load(".env")
-
-	if dotEnvErr != nil {
-		log.Fatalf("Error loading .env file")
-	}
+	godotenv.Load(".env")
 
 	mode := os.Getenv("MODE")
 
